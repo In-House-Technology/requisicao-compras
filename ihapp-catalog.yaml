@@ -1,0 +1,85 @@
+catalog_version: 1
+id: inhouse/requisicao-compras
+name: Requisição de compras
+summary: Pedidos de compra com aprovação, justificativa e acompanhamento de status.
+description: >-
+  Registre pedidos com quantidade e valor estimado em reais. Gestores aprovam ou
+  recusam pedidos de outras pessoas, e todos com acesso ao app acompanham o status.
+categories:
+  - compras
+  - aprovacoes
+license: MIT
+origin:
+  repository: https://github.com/In-House-Technology/requisicao-compras.git
+  tag_prefix: v
+version: 1.0.0
+requires:
+  spec_version: 1
+  starter: node-minimal
+  database: true
+  redis: false
+  object_storage: false
+default_slug: requisicao-compras
+permissions:
+  data:
+    database: true
+    redis: false
+    object_storage: false
+    tables:
+      - purchase_requests
+      - schema_migrations
+  identity:
+    email: true
+    groups: true
+  connectors: []
+  mcp_tools:
+    - name: list_requests
+      access: read
+      why: Consultar as requisições e decisões visíveis na interface para quem tem acesso ao app.
+  egress: []
+config:
+  - key: company_name
+    label: Nome da empresa
+    description: Nome exibido no cabeçalho e no título do app.
+    type: string
+    max_length: 100
+    default: Sua empresa
+  - key: approver_groups
+    label: Grupos de aprovadores
+    description: Grupos do login da empresa que podem aprovar ou recusar pedidos de outras pessoas.
+    type: list
+    min_items: 1
+    items:
+      type: group
+    default:
+      - ihc-admins
+  - key: approver_emails
+    label: E-mails de aprovadores
+    description: Pessoas adicionais que podem decidir pedidos de outras pessoas, além dos grupos configurados.
+    type: list
+    items:
+      type: email
+    default: []
+releases:
+  - version: 1.0.0
+    date: '2026-11-09'
+    summary: Primeira versão do catálogo para requisições de compras.
+    changes:
+      - type: added
+        text: Pedidos com descrição, quantidade, valor estimado, justificativa e decisão de outro gestor.
+      - type: added
+        text: Configuração por empresa, consulta MCP e retirada de pedidos pendentes com exclusão lógica.
+    breaking: false
+    migrations:
+      - revision: 001_purchase_requests
+        description: Cria a tabela de pedidos com UUID, datas de criação, alteração e exclusão lógica.
+        destructive: false
+        backfill: false
+    config:
+      added:
+        - company_name
+        - approver_groups
+        - approver_emails
+      removed: []
+      renamed: []
+    permissions_changed: false

@@ -1,0 +1,19 @@
+# Runs the same way on a laptop (`docker compose up --build`) and on the box. On the box
+# the deploy adds <install-dir>/apps/<slug>/compose.ihc.yml on top: the cloud
+# network, the env file written by ihc-app provision (it replaces env_file, required),
+# no published host port. On a laptop .env is optional: copy .env.example when you need it.
+# Never add postgres, redis or object storage services here: the cloud provides them.
+services:
+  app:
+    build: .
+    env_file:
+      - path: ${COMPANY_ENV_FILE:-.env}
+        required: false
+    ports:
+      - "${PORT:-8080}:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8080/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

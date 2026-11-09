@@ -1,0 +1,19 @@
+# Após a instalação, o push em main solicita o deploy ao reconciliador da nuvem.
+name: deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-__APP_SLUG__
+
+jobs:
+  deploy:
+    runs-on: ihc-deploy
+    timeout-minutes: 20
+    env:
+      APP_SLUG: __APP_SLUG__
+    steps:
+      - name: Publicar pelo reconciliador (lint, build, apply e health)
+        run: ihc-app deploy "$APP_SLUG"

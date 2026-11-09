@@ -1,0 +1,57 @@
+# The app's operational contract (docs/app-contract.md, schemas/company-app.schema.json).
+# ihc-app provision reads it on every push to main.
+schema_version: 1
+
+app:
+  slug: __APP_SLUG__
+  name: __APP_NAME__
+  owner_email: __OWNER_EMAIL__
+  description: Pedidos de compra (item, quantidade, valor estimado, justificativa) com aprovação do gestor e lista de status para todos.
+
+runtime:
+  type: docker-compose
+  compose_file: docker-compose.yml
+  service: app
+  port: 8080
+  healthcheck:
+    type: http
+    path: /health
+    expected_status: 200
+
+deploy:
+  enabled: true
+  domain: __APP_DOMAIN__
+  port: auto
+  env_example: .env.example
+
+auth:
+  required: true
+  provider: forward-auth
+
+database:
+  required: true
+  engine: postgres
+  migrations_command: node migrate.js
+
+dependencies:
+  redis:
+    required: false
+
+object_storage:
+  required: false
+
+# Agentes leem as mesmas requisições disponíveis na interface.
+mcp:
+  audience: __APP_SLUG__.mcp
+  tools_path: /mcp/tools
+  execute_path: /mcp/tools/{tool}/execute
+  scopes:
+    __APP_SLUG__.read:
+      - __APP_GROUP__
+  tools:
+    list_requests:
+      access: read
+
+checks:
+  build_command: docker compose build
+  test_command: npm test
