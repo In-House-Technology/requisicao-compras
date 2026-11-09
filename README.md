@@ -1,6 +1,6 @@
 # Requisição de compras
 
-App `inhouse/requisicao-compras`, versão **1.0.0**, para instalar na nuvem da sua empresa pelo catálogo In House Apps. Licença [MIT](LICENSE).
+App `inhouse/requisicao-compras`, versão **1.0.1**, para instalar na nuvem da sua empresa pelo catálogo In House Apps. Licença [MIT](LICENSE).
 
 Registre uma descrição, quantidade, valor estimado total em reais e justificativa. A interface organiza os pedidos em pendentes, aprovados e recusados, com solicitante, data, responsável pela decisão e comentário opcional. Todos com acesso ao app veem as requisições; o filtro “Só as minhas” também mostra pedidos que você pode decidir. A consulta limita-se aos 500 pedidos mais recentes, com até 30 cartões por coluna de decisões.
 
@@ -40,7 +40,7 @@ Sem o arquivo, valem os padrões. Cada lista informada substitui a lista inteira
 - **MCP:** `list_requests`, somente leitura, retorna os mesmos pedidos visíveis na interface, opcionalmente filtrados por `pendente`, `aprovada` ou `recusada`. O app valida o JWT do gateway (chave, emissor, audiência, validade e escopo `<slug>.read`). Não há ferramenta MCP de decisão.
 - **Integrações:** nenhum conector, Redis, bucket ou destino direto de internet. A comunicação interna com o Postgres e com o JWKS do gateway usa os endereços fornecidos pela nuvem.
 
-As rotas `/api/requests` e `/me` exigem a identidade da empresa. `/health` é pública e verifica a conexão ao banco. Os cabeçalhos `X-authentik-*` só devem chegar pelo proxy confiável da nuvem; não exponha o container diretamente à internet.
+As rotas `/api/requests`, `/api/me` e `/me` exigem a identidade da empresa. `GET /api/me` retorna a mesma pessoa autenticada que `/me`; sem identidade, ambas retornam 401. `/health` é pública, verifica a conexão ao banco e inclui `commit` de `COMMIT_SHA` ou `GIT_SHA` (nessa ordem), ou `null` quando ausentes. Os cabeçalhos `X-authentik-*` só devem chegar pelo proxy confiável da nuvem; não exponha o container diretamente à internet.
 
 ## Atualizações e migrações
 
