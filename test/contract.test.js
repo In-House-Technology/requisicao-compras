@@ -60,7 +60,7 @@ test("origin files, placeholders, version, workflows and licensing are consisten
   const steps = ci.jobs.validate.steps;
   assert.ok(steps.some((step) => step.run === "npm ci"));
   assert.ok(steps.some((step) => step.run === "npm test"));
-  const action = steps.filter((step) => step.uses === "Estoca/inhousecloud/.github/actions/ihapp-catalog-validate@77b5b92c4c000e75b86e9c088b93c8b87e55dc5d");
+  const action = steps.filter((step) => step.uses === "In-House-Technology/ihapp-tools@c2113f6a1f5cb33c40eba8213a1e272227452650");
   assert.equal(action.length, 2);
   assert.ok(action.every((step) => step.with.mode === "app"));
   assert.ok(action.some((step) => step.with.tag && step.with.commit));

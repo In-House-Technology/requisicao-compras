@@ -24,13 +24,13 @@ jobs:
       - run: npm test
       - name: Validar origem do catálogo
         if: startsWith(github.ref, 'refs/tags/') == false
-        uses: Estoca/inhousecloud/.github/actions/ihapp-catalog-validate@77b5b92c4c000e75b86e9c088b93c8b87e55dc5d
+        uses: In-House-Technology/ihapp-tools@c2113f6a1f5cb33c40eba8213a1e272227452650
         with:
           mode: app
           path: .
       - name: Validar versão, tag e commit
         if: startsWith(github.ref, 'refs/tags/')
-        uses: Estoca/inhousecloud/.github/actions/ihapp-catalog-validate@77b5b92c4c000e75b86e9c088b93c8b87e55dc5d
+        uses: In-House-Technology/ihapp-tools@c2113f6a1f5cb33c40eba8213a1e272227452650
         with:
           mode: app
           path: .
