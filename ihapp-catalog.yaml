@@ -12,7 +12,7 @@ license: MIT
 origin:
   repository: https://github.com/In-House-Technology/requisicao-compras.git
   tag_prefix: v
-version: 1.0.0
+version: 1.0.1
 requires:
   spec_version: 1
   starter: node-minimal
@@ -61,6 +61,22 @@ config:
       type: email
     default: []
 releases:
+  - version: 1.0.1
+    date: '2026-11-09'
+    summary: Correções de identidade e identificação do commit na verificação de saúde.
+    changes:
+      - type: fixed
+        text: GET /api/me retorna a mesma pessoa autenticada que /me e exige o login da empresa.
+      - type: fixed
+        text: /health inclui o commit de COMMIT_SHA ou GIT_SHA, ou null quando ausentes, preservando a verificação do banco.
+    breaking: false
+    migrations: []
+    config:
+      added: []
+      removed: []
+      renamed: []
+    permissions_changed: false
+    upgrade_notes: Atualização compatível, sem novas permissões, migrações ou alterações de configuração.
   - version: 1.0.0
     date: '2026-11-09'
     summary: Primeira versão do catálogo para requisições de compras.

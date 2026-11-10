@@ -30,7 +30,7 @@ test("requires, storage, identity and connector permissions agree with operation
 
 test("all created tables and shipped SQL migrations are declared; UUID and audit columns exist", async () => {
   const names = (await readdir(new URL("../migrations/", import.meta.url))).filter((name) => name.endsWith(".sql")).sort();
-  assert.deepEqual(catalog.releases[0].migrations.map((item) => `${item.revision}.sql`), names);
+  assert.deepEqual(catalog.releases.flatMap((release) => release.migrations.map((item) => `${item.revision}.sql`)).sort(), names);
   const sql = (await Promise.all(names.map((name) => read(`migrations/${name}`)))).join("\n");
   const runner = await read("migrate.js");
   const tables = [...`${sql}\n${runner}`.matchAll(/CREATE TABLE IF NOT EXISTS ([a-z_]+)/g)].map((match) => match[1]).sort();
@@ -64,6 +64,55 @@ test("origin files, placeholders, version, workflows and licensing are consisten
   assert.equal(action.length, 2);
   assert.ok(action.every((step) => step.with.mode === "app"));
   assert.ok(action.some((step) => step.with.tag && step.with.commit));
+});
+
+test("GET /api/me and /me share signed-in identity and require sign-in headers", async () => {
+  const server = createApp({ config, pool: {}, env: { APP_SLUG: placeholders.APP_SLUG } });
+  for (const groups of [["ihc-users"], ["ihc-users", "ihc-admins"]]) {
+    const headers = { "x-authentik-email": "Person@example.com", "x-authentik-name": "Pessoa de teste", "x-authentik-groups": groups.join("|") };
+    for (const path of ["/api/me", "/me"]) {
+      const response = await request(server, { path, headers });
+      assert.equal(response.status, 200);
+      assert.deepEqual(response.json(), { email: "person@example.com", name: "Pessoa de teste", groups, isApprover: groups.includes("ihc-admins") });
+    }
+  }
+  for (const path of ["/api/me", "/me"]) {
+    for (const headers of [{}, { "x-authentik-name": "Pessoa de teste", "x-authentik-groups": "ihc-admins" }]) {
+      const response = await request(server, { path, headers });
+      assert.equal(response.status, 401);
+      assert.deepEqual(response.json(), { error: "Entre com sua conta da empresa." });
+    }
+  }
+});
+
+test("public /health reports commit precedence and fallback while checking the database", async () => {
+  for (const [shaEnv, commit] of [
+    [{ COMMIT_SHA: "commit-sha", GIT_SHA: "git-sha" }, "commit-sha"],
+    [{ COMMIT_SHA: "commit-sha" }, "commit-sha"],
+    [{ GIT_SHA: "git-sha" }, "git-sha"],
+    [{ COMMIT_SHA: "", GIT_SHA: "git-sha" }, "git-sha"],
+    [{}, null],
+    [{ COMMIT_SHA: "", GIT_SHA: "" }, null],
+  ]) {
+    const queries = [];
+    const server = createApp({ config, env: { APP_SLUG: placeholders.APP_SLUG, ...shaEnv }, pool: {
+      async query(sql) { queries.push(sql); return { rows: [] }; },
+    } });
+    const response = await request(server, { path: "/health" });
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.json(), { ok: true, service: placeholders.APP_SLUG, db: true, commit });
+    assert.deepEqual(queries, ["SELECT 1"]);
+  }
+});
+
+test("/health still fails when the database check fails", async (t) => {
+  t.mock.method(console, "error", () => {});
+  const server = createApp({ config, env: { APP_SLUG: placeholders.APP_SLUG, COMMIT_SHA: "commit-sha" }, pool: {
+    async query() { throw new Error("database unavailable"); },
+  } });
+  const response = await request(server, { path: "/health" });
+  assert.equal(response.status, 500);
+  assert.deepEqual(response.json(), { error: "Não foi possível concluir a operação." });
 });
 
 test("runtime MCP inventory matches both permission manifests and honors renamed slug and audience", async (t) => {

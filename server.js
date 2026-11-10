@@ -274,14 +274,14 @@ export function createApp({ pool, config, env = process.env }) {
       const path = url.pathname;
       if (path === "/health") {
         await pool.query("SELECT 1");
-        return json(res, 200, { ok: true, service: slug, db: true });
+        return json(res, 200, { ok: true, service: slug, db: true, commit: env.COMMIT_SHA || env.GIT_SHA || null });
       }
       if (path.startsWith("/mcp/")) return await mcp(req, res, path);
 
       const me = person(req);
       if (!me) return json(res, 401, { error: "Entre com sua conta da empresa." });
 
-      if (path === "/me") return json(res, 200, me);
+      if (path === "/me" || (req.method === "GET" && path === "/api/me")) return json(res, 200, me);
 
       if (req.method === "GET" && path === "/") {
         const msg = url.searchParams.get("msg");
