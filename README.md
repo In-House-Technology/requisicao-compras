@@ -65,4 +65,4 @@ npm test
 
 Os valores `LOCAL_AUTH_MOCK_*` do exemplo servem apenas para desenvolvimento. Remova-os da configuração de produção. Não versione `.env`. Opcionalmente, `docker compose up --build` publica a porta local 8080; na nuvem, o overlay remove essa publicação. O Dockerfile inclui a configuração da empresa na imagem quando ela existir no repositório instalado.
 
-A CI executa `npm ci`, `npm test` e o validador oficial em modo app; em tags verifica também versão e commit. A action `Estoca/inhousecloud/.github/actions/ihapp-catalog-validate@77b5b92c4c000e75b86e9c088b93c8b87e55dc5d` precisa estar publicada na plataforma para essa etapa funcionar. O fluxo `.gitea/workflows/deploy.yml` é o fluxo genérico usado pela empresa após instalar o app.
+A CI executa `npm ci`, `npm test` e o validador oficial em modo app; em tags verifica também versão e commit. A action `In-House-Technology/ihapp-tools@c2113f6a1f5cb33c40eba8213a1e272227452650` precisa estar publicada na plataforma para essa etapa funcionar. O fluxo `.gitea/workflows/deploy.yml` é o fluxo genérico usado pela empresa após instalar o app.
