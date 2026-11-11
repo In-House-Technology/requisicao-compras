@@ -8,7 +8,11 @@ Gestores podem aprovar ou recusar, mas ninguém decide o próprio pedido. O soli
 
 ## Instalação
 
-Escolha esta versão no catálogo da nuvem e confirme as permissões. A instalação substitui `__APP_SLUG__`, `__APP_NAME__`, `__OWNER_EMAIL__`, `__APP_DOMAIN__` e `__APP_GROUP__` em `company-app.yaml`, além do slug no fluxo de deploy da empresa. Você pode escolher outro slug. O runtime recebe `APP_SLUG`, as variáveis do Postgres compartilhado e as variáveis `IHC_MCP_*` da nuvem. O app usa Node 22 e não precisa de Redis nem armazenamento de objetos.
+No Claude com o conector da InHouse ativo, peça: “Prepare a instalação de `inhouse/requisicao-compras` para nossa empresa. Mostre quem poderá aprovar pedidos e quais dados o app usa.” Revise a proposta e aprove a instalação. Quando o Claude devolver o link, entre com a conta da empresa e confira o fluxo com um solicitante e um aprovador. Veja o [guia de instalação do catálogo](https://inhouse.technology/cloud/docs/catalog).
+
+O código deste repositório é público. A cópia instalada no InHouseCloud gerenciado, as configurações e os pedidos da empresa ficam na instância da empresa.
+
+A instalação substitui `__APP_SLUG__`, `__APP_NAME__`, `__OWNER_EMAIL__`, `__APP_DOMAIN__` e `__APP_GROUP__` em `company-app.yaml`, além do slug no fluxo de deploy da empresa. Você pode escolher outro slug. O runtime recebe `APP_SLUG`, as variáveis do Postgres compartilhado e as variáveis `IHC_MCP_*` da nuvem. O app usa Node 22 e não precisa de Redis nem armazenamento de objetos.
 
 O repositório de origem não contém `ihapp-config.yaml` nem `ihapp-origin.yaml`. O segundo é mantido pelo mecanismo de instalação e atualização; não o edite manualmente.
 
@@ -52,7 +56,7 @@ A primeira migração cria a tabela de pedidos numa base vazia. Nenhum pedido é
 
 ## Desenvolvimento local
 
-Com Node 22 e acesso a um Postgres de desenvolvimento já existente:
+Para contribuir com o código público deste app, use Node 22 e um Postgres de desenvolvimento:
 
 ```sh
 npm ci
